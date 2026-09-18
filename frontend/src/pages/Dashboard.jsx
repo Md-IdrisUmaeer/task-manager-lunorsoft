@@ -44,13 +44,15 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // "all" and "pending" both only show active tasks - once a task is
-  // completed it drops out of view here and only shows up in "Completed".
+  // "all" shows everything (pending + completed). "pending" and "overdue"
+  // only show active tasks. "completed" only shows finished ones.
   const fetchTasks = async (status = filter) => {
     setLoading(true);
     setError("");
     try {
-      const query = status === "completed" ? "?status=completed" : "?status=pending";
+      let query = "";
+      if (status === "completed") query = "?status=completed";
+      else if (status === "pending" || status === "overdue") query = "?status=pending";
       const { data } = await api.get(`/tasks${query}`);
       setTasks(data);
     } catch (err) {
@@ -68,6 +70,8 @@ const Dashboard = () => {
   const handleCreate = async (form) => {
     try {
       const { data } = await api.post("/tasks", form);
+      // New tasks are always pending, so they belong in every view except
+      // the "Completed" tab.
       if (filter !== "completed") {
         setTasks((prev) => [data, ...prev]);
       }
@@ -88,7 +92,14 @@ const Dashboard = () => {
   const handleToggle = async (id) => {
     try {
       const { data } = await api.patch(`/tasks/${id}/toggle`);
-      const belongsHere = filter === "completed" ? data.status === "completed" : data.status === "pending";
+      // "all" keeps showing the task either way; the other tabs only keep
+      // it if it still matches that tab's status.
+      const belongsHere =
+        filter === "all"
+          ? true
+          : filter === "completed"
+          ? data.status === "completed"
+          : data.status === "pending";
       setTasks((prev) =>
         belongsHere ? prev.map((t) => (t._id === id ? data : t)) : prev.filter((t) => t._id !== id)
       );
