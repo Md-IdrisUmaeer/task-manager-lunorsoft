@@ -16,6 +16,17 @@ const TaskForm = ({ onSubmit, initial, onCancel }) => {
       setError("Title is required");
       return;
     }
+    // Only block past due dates when creating a new task - an existing
+    // task may already be overdue and its other fields should still be
+    // editable without being forced to change/clear the due date.
+    if (!initial && form.dueDate) {
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      if (new Date(form.dueDate) < startOfToday) {
+        setError("Due date cannot be in the past");
+        return;
+      }
+    }
     setError("");
     onSubmit(form);
     if (!initial) setForm(emptyForm);
@@ -55,13 +66,14 @@ const TaskForm = ({ onSubmit, initial, onCancel }) => {
           name="dueDate"
           value={form.dueDate ? form.dueDate.slice(0, 10) : ""}
           onChange={handleChange}
+          min={initial ? undefined : new Date().toISOString().slice(0, 10)}
           className="border border-slate-300 rounded-md px-3 py-2 flex-1"
         />
       </div>
       <div className="flex gap-2">
         <button
           type="submit"
-          className="bg-slate-900 text-white px-4 py-2 rounded-md hover:bg-slate-800 transition"
+          className="bg-brand-dark text-white px-4 py-2 rounded-md hover:bg-brand-teal transition"
         >
           {initial ? "Save changes" : "Add task"}
         </button>

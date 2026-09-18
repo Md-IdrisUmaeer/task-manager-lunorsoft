@@ -25,9 +25,9 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-brand-mint/30 px-4">
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-xl p-8 w-full max-w-sm">
-        <h1 className="text-2xl font-bold mb-6 text-slate-800">Log in</h1>
+        <h1 className="text-2xl font-bold mb-6 text-brand-dark">Log in</h1>
         {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
         <label className="block text-sm font-medium text-slate-600 mb-1">Email</label>
         <input
@@ -35,7 +35,7 @@ const Login = () => {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full border border-slate-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-slate-400"
+          className="w-full border border-slate-300 rounded-md px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-brand-teal"
         />
         <label className="block text-sm font-medium text-slate-600 mb-1">Password</label>
         <input
@@ -43,17 +43,17 @@ const Login = () => {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full border border-slate-300 rounded-md px-3 py-2 mb-6 focus:outline-none focus:ring-2 focus:ring-slate-400"
+          className="w-full border border-slate-300 rounded-md px-3 py-2 mb-6 focus:outline-none focus:ring-2 focus:ring-brand-teal"
         />
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-slate-900 text-white py-2 rounded-md hover:bg-slate-800 transition disabled:opacity-50"
+          className="w-full bg-brand-dark text-white py-2 rounded-md hover:bg-brand-teal transition disabled:opacity-50"
         >
           {loading ? "Logging in..." : "Log in"}
         </button>
         <p className="text-sm text-slate-500 mt-4 text-center">
-          No account? <Link to="/register" className="text-slate-800 underline">Register</Link>
+          No account? <Link to="/register" className="text-brand-dark underline">Register</Link>
         </p>
       </form>
     </div>

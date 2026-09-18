@@ -19,11 +19,44 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET /api/tasks/stats
+// Returns aggregate counts for the current user, plus a score of
+// +5 per completed task and -3 per task that's overdue (past its due
+// date and still pending).
+router.get("/stats", async (req, res) => {
+  try {
+    const now = new Date();
+    const tasks = await Task.find({ owner: req.user.id });
+
+    const total = tasks.length;
+    const completed = tasks.filter((t) => t.status === "completed").length;
+    const notCompleted = tasks.filter(
+      (t) => t.status === "pending" && t.dueDate && new Date(t.dueDate) < now
+    ).length;
+    const due = tasks.filter(
+      (t) => t.status === "pending" && (!t.dueDate || new Date(t.dueDate) >= now)
+    ).length;
+
+    const score = completed * 5 - notCompleted * 3;
+
+    res.json({ total, completed, due, notCompleted, score });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch stats", error: err.message });
+  }
+});
+
 router.post("/", async (req, res) => {
   try {
     const { title, description, priority, dueDate } = req.body;
     if (!title || !title.trim()) {
       return res.status(400).json({ message: "Title is required" });
+    }
+    if (dueDate) {
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      if (new Date(dueDate) < startOfToday) {
+        return res.status(400).json({ message: "Due date cannot be in the past" });
+      }
     }
     const task = await Task.create({
       owner: req.user.id,

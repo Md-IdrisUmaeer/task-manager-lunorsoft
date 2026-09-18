@@ -4,13 +4,14 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import UserStats from "./pages/UserStats.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
 function App() {
   const { token } = useAuth();
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-brand-mint/30">
       {token && <Navbar />}
       <Routes>
         <Route path="/login" element={token ? <Navigate to="/" /> : <Login />} />
@@ -20,6 +21,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/stats"
+          element={
+            <ProtectedRoute>
+              <UserStats />
             </ProtectedRoute>
           }
         />
